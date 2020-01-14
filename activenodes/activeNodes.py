@@ -122,5 +122,3 @@ class ActiveNodes:
     def deactive(self):
         self.active()
         return self.deactiveNodes
-
-x = ActiveNodes("192.168.0.1", "192.168.0.225", log=True)
