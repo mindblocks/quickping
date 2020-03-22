@@ -1,4 +1,4 @@
-# ActiveNodes
+# Quickping 
 
-ActiveNodes
-Tool to show Active Nodes in range of IP addresses
+QuickPing
+Tool to show Active and Deactive Addresses in range of IPv4 Adresses
