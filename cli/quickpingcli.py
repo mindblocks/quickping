@@ -7,7 +7,7 @@ executable python file of activeNodes.py as Terminal Tool
 import sys
 import re
 
-from activeNodes import ActiveNodes
+from quickping import Quickping
 
 log = True if 'log' in sys.argv else False
 
@@ -20,7 +20,7 @@ for arg in sys.argv:
         start, end = arg.split(':')
 
 try:
-    ant = ActiveNodes(start, end, threads=threads, log=log)
+    ant = Quickping(start, end, threads=threads, log=log)
     print('\nActive Node : {0}\n'.format(ant.active()))
 except expression as identifier:
     raise identifier from None

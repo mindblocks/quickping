@@ -1,7 +1,7 @@
 
 """
-activenodes/activeNodes.py
-Python3 package for find active nodes for IPv4 in range of IP address
+quickping/quickping.py
+Python3 package for find active addresses for IPv4 in range of IP address
 """
 
 import sys
@@ -11,9 +11,10 @@ import ipaddress
 from threading import Thread
 from queue import Queue
 
-import error
+from .error import AddressRangeError
+from .color import colorize
 
-class ActiveNodes:
+class Quickping:
     def __init__(self, start, end, threads=512, log=False):
 
         self.start = start
@@ -22,8 +23,8 @@ class ActiveNodes:
         self.log = log
         self.logs = []
         self.addresses = []
-        self.activeNodes = []
-        self.deactiveNodes = []
+        self.activeAddresses = []
+        self.deactiveAddresses = []
 
         try:
             ipaddress.IPv4Address(start)
@@ -32,10 +33,10 @@ class ActiveNodes:
             raise e
 
         if ipaddress.ip_address(self.start) > ipaddress.ip_address(self.end):
-            raise error.AddressRangeError("Start and end address are not same range")
+            raise AddressRangeError("Start and end address are not same range")
 
     def __repr__(self):
-        return "ActiveNodes('{0}', '{1}', {2})".format(self.start, self.end, self.threads)
+        return "Quickping('{0}', '{1}', {2})".format(self.start, self.end, self.threads)
 
     def genAddresses(self):
 
@@ -66,7 +67,9 @@ class ActiveNodes:
             address = queue.get()
 
             if self.log:
-                log = "{0} Thread <{1}> Pinging : {2}".format(time.ctime(), thread, address)
+                log = "{0} Thread <{1}> Pinging : {2}".format(time.ctime(), 
+                        colorize(thread, fg="cyan"),
+                        colorize(address, fg="cyan"))
                 self.logs.append(log)
                 print(log)
 
@@ -76,22 +79,22 @@ class ActiveNodes:
             stderr=subprocess.STDOUT)
             if ret == 0:
                 if self.log:
-                    log = "{0} Active Node at : {1}".format(time.ctime(), address)
+                    log = "{0} Active Address at : {1}".format(time.ctime(), colorize(address, fg="green"))
                     self.logs.append(log)
                     print(log)
-                self.activeNodes.append(address)
+                self.activeAddresses.append(address)
             else:
                 if self.log:
-                    log = "{0} Node Not Active at : {1}".format(time.ctime(), address)
+                    log = "{0} Deactive Address at : {1}".format(time.ctime(), colorize(address, fg="red"))
                     self.logs.append(log)
                     print(log)
-                self.deactiveNodes.append(address)
+                self.deactiveAddresses.append(address)
             queue.task_done()
 
     def active(self):
 
         """
-        return self.activeNodes, self.deactiveNodes
+        return self.activeAddresses, self.deactiveAddresses
         """
 
         self.genAddresses()
@@ -107,18 +110,19 @@ class ActiveNodes:
         queue.join()
 
         #remove duplicates addresses and sort them
-        self.activeNodes = list(dict.fromkeys(sorted(self.activeNodes)))
-        self.deactiveNodes = list(dict.fromkeys(sorted(self.deactiveNodes)))
+        self.activeAddresses = list(dict.fromkeys(sorted(self.activeAddresses)))
+        self.deactiveAddresses = list(dict.fromkeys(sorted(self.deactiveAddresses)))
 
         #ratio add after this function run
         self.ratio = {
             "addresses": len(self.addresses),
-            "active": len(self.activeNodes),
-            "deactive": len(self.deactiveNodes)
+            "active": len(self.activeAddresses),
+            "deactive": len(self.deactiveAddresses)
         }
         
-        return self.activeNodes
+        return self.activeAddresses
 
     def deactive(self):
         self.active()
-        return self.deactiveNodes
+        return self.deactiveAddresses
+
