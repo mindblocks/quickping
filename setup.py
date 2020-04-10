@@ -6,14 +6,14 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="quickping",
-    version="1.0.0",
+    version="1.0.1",
     author="Sajjad Jawad",
     author_email="iamsajjad@mail.ru",
     description="Using Multi-Threads to find active IPv4 addresses",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license='Apache License 2.0',
-    #url="",
+    url="https://github.com/sajjadlab/quickping.git",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
