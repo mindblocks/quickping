@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="quickping",
-    version="1.0.1",
+    version="1.0.2",
     author="Sajjad Jawad",
     author_email="iamsajjad@mail.ru",
     description="Using Multi-Threads to find active IPv4 addresses",
