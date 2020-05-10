@@ -73,7 +73,7 @@ class Quickping:
                 self.logs.append(log)
                 print(log)
 
-            ret = subprocess.call("ping -c 1 {0}".format(address),
+            ret = subprocess.call("exec ping -c 1 {0}".format(address),
             shell=True,
             stdout=open('/dev/null', 'w'),
             stderr=subprocess.STDOUT)
