@@ -15,10 +15,11 @@ from .error import AddressRangeError
 from .color import colorize
 
 class Quickping:
-    def __init__(self, start, end, threads=512, log=False):
+    def __init__(self, start, end, ignore=[], threads=512, log=False):
 
         self.start = start
         self.end = end
+        self.ignore = ignore
         self.threads = threads
         self.log = log
         self.logs = []
@@ -51,7 +52,7 @@ class Quickping:
         while address != self.end:
             #print(address)
             address = str(ipaddress.ip_address(address) + 1)
-            self.addresses.append(address)
+            if address not in self.ignore: self.addresses.append(address)
 
         return self.addresses
     
