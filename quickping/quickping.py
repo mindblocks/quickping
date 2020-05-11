@@ -15,7 +15,7 @@ from .error import AddressRangeError
 from .color import colorize
 
 class Quickping:
-    def __init__(self, start, end, ignore=[], threads=512, log=False):
+    def __init__(self, start, end, ignore=[], threads=256, log=False):
 
         self.start = start
         self.end = end
@@ -74,11 +74,11 @@ class Quickping:
                 self.logs.append(log)
                 print(log)
 
-            ret = subprocess.call("exec ping -c 1 {0}".format(address),
-            shell=True,
-            stdout=open('/dev/null', 'w'),
-            stderr=subprocess.STDOUT)
-            if ret == 0:
+            process = subprocess.Popen("exec ping -c 1 {0}".format(address), shell=True,
+                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            data = process.wait(timeout=None)
+
+            if data == 0:
                 if self.log:
                     log = "{0} Active Address at : {1}".format(time.ctime(), colorize(address, fg="green"))
                     self.logs.append(log)
@@ -91,6 +91,8 @@ class Quickping:
                     print(log)
                 self.deactiveAddresses.append(address)
             queue.task_done()
+            process.kill()
+            process.wait()
 
     def active(self):
 
