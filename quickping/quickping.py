@@ -59,7 +59,17 @@ class Quickping:
     def pinger(self, thread, queue):
         
         """
-        Pings subnet
+
+        pinger make thread that run this command
+            ```
+            exec ping -c 1 <ipaddress>
+            ```
+
+        logging color
+            cyan  (start thead)
+            green (active address)
+            red   (deactive address)
+
         """
 
         self.logs.clear()
@@ -68,8 +78,8 @@ class Quickping:
             address = queue.get()
 
             if self.log:
-                log = "{0} Thread <{1}> Pinging : {2}".format(time.ctime(), 
-                        colorize(thread, fg="cyan"),
+                log = "{0} thread *{1} pinging : {2}".format(time.ctime(),
+                        colorize(str(thread), fg="cyan"),
                         colorize(address, fg="cyan"))
                 self.logs.append(log)
                 print(log)
@@ -80,13 +90,13 @@ class Quickping:
 
             if data == 0:
                 if self.log:
-                    log = "{0} Active Address at : {1}".format(time.ctime(), colorize(address, fg="green"))
+                    log = "{0} active address at : {1}".format(time.ctime(), colorize(address, fg="green"))
                     self.logs.append(log)
                     print(log)
                 self.activeAddresses.append(address)
             else:
                 if self.log:
-                    log = "{0} Deactive Address at : {1}".format(time.ctime(), colorize(address, fg="red"))
+                    log = "{0} deactive address at : {1}".format(time.ctime(), colorize(address, fg="red"))
                     self.logs.append(log)
                     print(log)
                 self.deactiveAddresses.append(address)
@@ -97,7 +107,10 @@ class Quickping:
     def active(self):
 
         """
-        return self.activeAddresses, self.deactiveAddresses
+
+        return self.activeAddresses
+        and update the value of deactiveAddresses
+
         """
 
         self.genAddresses()
@@ -116,7 +129,7 @@ class Quickping:
         self.activeAddresses = list(dict.fromkeys(sorted(self.activeAddresses)))
         self.deactiveAddresses = list(dict.fromkeys(sorted(self.deactiveAddresses)))
 
-        #ratio add after this function run
+        #ratio add after this method run
         self.ratio = {
             "addresses": len(self.addresses),
             "active": len(self.activeAddresses),
@@ -126,6 +139,14 @@ class Quickping:
         return self.activeAddresses
 
     def deactive(self):
+
+        """
+
+        return self.deactiveAddresses
+        and update the value of activeAddresses
+
+        """
+
         self.active()
         return self.deactiveAddresses
 
