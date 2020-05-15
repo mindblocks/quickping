@@ -34,7 +34,7 @@ class Quickping:
             raise e
 
         if ipaddress.ip_address(self.start) > ipaddress.ip_address(self.end):
-            raise AddressRangeError("Start and end address are not same range")
+            raise AddressRangeError("Start and end addresses are not in the same range")
 
     def __repr__(self):
         return "Quickping('{0}', '{1}', {2})".format(self.start, self.end, self.threads)
@@ -100,6 +100,7 @@ class Quickping:
                     self.logs.append(log)
                     print(log)
                 self.deactiveAddresses.append(address)
+
             queue.task_done()
             process.kill()
             process.wait()
