@@ -42,6 +42,3 @@ def cLI(start, end, threads, log):
     click.echo("Time take to Done : {}".format(timeToDone))
     click.echo("")
 
-if __name__ == "__main__":
-    cLI()
-

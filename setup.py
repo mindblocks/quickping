@@ -15,11 +15,18 @@ setuptools.setup(
     license='Apache License 2.0',
     url="https://github.com/sajjadlab/quickping.git",
     packages=setuptools.find_packages(),
+    install_requires=[
+        'Click',
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
+    entry_points='''
+        [console_scripts]
+        quickping=cli.cLI:cLI
+    ''',
     python_requires='>=3.6',
 )
 
