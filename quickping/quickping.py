@@ -8,9 +8,10 @@ import sys
 import time
 import subprocess
 import ipaddress
-from threading import Thread
+from threading import Thread, Event
 from queue import Queue
 
+from .ping import ping
 from .error import AddressRangeError
 from .color import colorize
 
@@ -26,6 +27,7 @@ class Quickping:
         self.addresses = []
         self.activeAddresses = []
         self.deactiveAddresses = []
+        self.result_available = Event()
 
         try:
             ipaddress.IPv4Address(start)
@@ -44,10 +46,10 @@ class Quickping:
         """
         collect IPv4 addresses
         """
-        
+
         self.addresses.clear()
 
-        #start from first address 
+        #start from first address
         address = self.start
         while address != self.end:
             #print(address)
@@ -55,9 +57,9 @@ class Quickping:
             if address not in self.ignore: self.addresses.append(address)
 
         return self.addresses
-    
+
     def pinger(self, thread, queue):
-        
+
         """
 
         pinger make thread that run this command
@@ -73,7 +75,7 @@ class Quickping:
         """
 
         self.logs.clear()
-        
+
         while True:
             address = queue.get()
 
@@ -84,26 +86,29 @@ class Quickping:
                 self.logs.append(log)
                 print(log)
 
-            process = subprocess.Popen("exec ping -c 1 {0}".format(address), shell=True,
-                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            data = process.wait(timeout=None)
+            #process = subprocess.Popen("exec ping -c 1 {0}".format(address), shell=True,
+            #                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            process = ping(address)
+            #data = process.wait(timeout=None)
+            data = process
 
-            if data == 0:
+            if data == True:
+                self.activeAddresses.append(address)
                 if self.log:
                     log = "{0} active address at : {1}".format(time.ctime(), colorize(address, fg="green"))
-                    self.logs.append(log)
                     print(log)
-                self.activeAddresses.append(address)
+                    self.logs.append(log)
             else:
+                self.deactiveAddresses.append(address)
                 if self.log:
                     log = "{0} deactive address at : {1}".format(time.ctime(), colorize(address, fg="red"))
                     self.logs.append(log)
                     print(log)
-                self.deactiveAddresses.append(address)
 
             queue.task_done()
-            process.kill()
-            process.wait()
+            self.result_available.wait(0)
+            #process.kill()
+            #process.wait()
 
     def active(self):
 
@@ -136,7 +141,7 @@ class Quickping:
             "active": len(self.activeAddresses),
             "deactive": len(self.deactiveAddresses)
         }
-        
+
         return self.activeAddresses
 
     def deactive(self):
